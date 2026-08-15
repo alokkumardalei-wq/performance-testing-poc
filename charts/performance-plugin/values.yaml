@@ -1,0 +1,46 @@
+image:
+  repository: ghcr.io/openeverest/plugin-performance
+  tag: ""            # defaults to Chart.appVersion
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+
+plugin:
+  name: performance
+  displayName: "Performance"
+  description: "Benchmark Everest-managed databases with curated workload profiles; results are fingerprinted and comparable over time."
+  vendor: "OpenEverest"
+  enabled: true
+  bundlePath: "/main.js"
+  extensionPoints:
+    - type: clusterDetailTab
+      path: performance
+      label: Performance
+
+# Benchmark execution.
+benchmark:
+  # preferred | required | off — how strongly benchmark Jobs avoid the
+  # database's nodes. "required" fails scheduling on single-node clusters.
+  isolation: preferred
+  # Driver image overrides (air-gapped installs).
+  sysbenchImage: ""
+  ycsbImage: ""
+
+# Run-history persistence. Default is ephemeral (emptyDir) per the design
+# discussion: no PVC unless the user opts in.
+persistence:
+  enabled: false
+  size: 1Gi
+  storageClass: ""
+
+# Reject /api requests missing the X-Everest-User header the host proxy sets.
+requireUserHeader: false
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

@@ -1,0 +1,21 @@
+# Local-dev Plugin CR: backend on the laptop (k3d reaches it via
+# host.k3d.internal), bundle served by `npm run dev`.
+# Production installs use the Helm chart instead (charts/performance-plugin).
+apiVersion: extensions.openeverest.io/v1alpha1
+kind: Plugin
+metadata:
+  name: performance
+spec:
+  displayName: "Performance"
+  description: "Database benchmarking (local dev)"
+  version: "0.1.0"
+  vendor: "OpenEverest"
+  enabled: true
+  backend:
+    externalUrl: "http://host.k3d.internal:8081"
+  frontend:
+    bundlePath: "http://localhost:3001/src/main.tsx"
+    extensionPoints:
+      - type: clusterDetailTab
+        path: performance
+        label: Performance

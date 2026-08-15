@@ -1,0 +1,13 @@
+# go-ycsb driver image: one small Go binary that can benchmark MongoDB,
+# MySQL and PostgreSQL, plus the stock core workload property files under
+# /workloads (the run scripts reference /workloads/workloada).
+FROM golang:1.25-alpine AS build
+RUN apk add --no-cache git
+RUN git clone --depth 1 https://github.com/pingcap/go-ycsb /src
+WORKDIR /src
+RUN CGO_ENABLED=0 go build -o /out/go-ycsb ./cmd/go-ycsb
+
+FROM alpine:3.20
+COPY --from=build /out/go-ycsb /usr/local/bin/go-ycsb
+COPY --from=build /src/workloads /workloads
+ENTRYPOINT ["/usr/local/bin/go-ycsb"]

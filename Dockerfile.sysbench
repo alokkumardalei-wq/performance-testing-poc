@@ -1,0 +1,7 @@
+# sysbench driver image built from Debian packages (multi-arch, includes both
+# the MySQL and PostgreSQL drivers and the stock oltp_* lua scripts).
+FROM debian:bookworm-slim
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends sysbench && \
+    rm -rf /var/lib/apt/lists/*
+ENTRYPOINT ["sysbench"]

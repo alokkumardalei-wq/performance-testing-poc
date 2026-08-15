@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Performance Plugin — Dev Sandbox</title>
+    <style>
+      body { margin: 0; font-family: Roboto, Helvetica, Arial, sans-serif; }
+      .sandbox-banner {
+        background: #fff3cd; color: #664d03; padding: 6px 16px; font-size: 13px;
+        border-bottom: 1px solid #ffe69c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sandbox-banner">
+      Dev sandbox — mock host. Set target with ?namespace=…&amp;instance=…
+      (backend expected on 127.0.0.1:8081)
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/sandbox.tsx"></script>
+  </body>
+</html>

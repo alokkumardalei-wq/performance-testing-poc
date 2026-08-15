@@ -1,0 +1,29 @@
+apiVersion: extensions.openeverest.io/v1alpha1
+kind: Plugin
+metadata:
+  name: {{ .Values.plugin.name }}
+spec:
+  displayName: {{ .Values.plugin.displayName | quote }}
+  description: {{ .Values.plugin.description | quote }}
+  version: {{ .Chart.AppVersion | quote }}
+  vendor: {{ .Values.plugin.vendor | quote }}
+  enabled: {{ .Values.plugin.enabled }}
+  backend:
+    serviceRef:
+      namespace: {{ .Release.Namespace }}
+      name: {{ .Release.Name }}
+      port: {{ .Values.service.port }}
+  frontend:
+    bundlePath: {{ .Values.plugin.bundlePath | quote }}
+    extensionPoints:
+      {{- range .Values.plugin.extensionPoints }}
+      - type: {{ .type }}
+        path: {{ .path }}
+        label: {{ .label }}
+        {{- /* `providers` deliberately omitted: the documented values do not
+               match what the host filter compares against on release-2.0;
+               engine compatibility is handled inside the plugin UI. */}}
+      {{- end }}
+  permissions:
+    - verb: read
+      resource: database-clusters

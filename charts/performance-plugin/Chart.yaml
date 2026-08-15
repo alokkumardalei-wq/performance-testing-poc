@@ -1,0 +1,9 @@
+apiVersion: v2
+name: performance-plugin
+description: >-
+  OpenEverest performance-testing plugin: run database benchmarks (sysbench,
+  go-ycsb) against Everest-managed instances from the UI and CLI, with
+  fingerprinted, comparable results.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
