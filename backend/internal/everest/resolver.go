@@ -50,7 +50,7 @@ type Instance struct {
 }
 
 // StaticInstance is a database registered via configuration rather than
-// discovered from Everest CRs — used for demo environments and for
+// discovered from Everest CRs - used for demo environments and for
 // benchmarking databases OpenEverest does not manage. Configured with the
 // STATIC_INSTANCES env var (JSON array).
 type StaticInstance struct {
@@ -127,7 +127,10 @@ func (r *Resolver) ListInstances(ctx context.Context, namespace string) ([]Insta
 	}
 	if err != nil {
 		if apierrors.IsNotFound(err) || meta_noKind(err) {
-			return instances, nil // CRD not installed — static/standalone only
+			return instances, nil // CRD not installed - static/standalone only
+		}
+		if len(instances) > 0 {
+			return instances, nil // cluster unreachable; static instances still work
 		}
 		return nil, err
 	}

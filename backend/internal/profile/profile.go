@@ -38,7 +38,7 @@ var profiles = []Profile{
 	{
 		Name:        "smoke",
 		DisplayName: "Smoke Test",
-		Description: "Quick sanity check: small dataset, low concurrency, 60 seconds. Verifies the database accepts load at all.",
+		Description: "Small dataset, low concurrency, 60 seconds. Quick check that the database accepts load.",
 		Spec: driver.RunSpec{
 			Profile: "smoke", Threads: 4, DurationSeconds: 60,
 			ReadPercent: 70, WritePercent: 30,
@@ -48,7 +48,7 @@ var profiles = []Profile{
 	{
 		Name:        "read_heavy",
 		DisplayName: "Read Heavy",
-		Description: "95% reads / 5% writes: typical content-serving or catalog workload.",
+		Description: "95% reads / 5% writes, similar to content-serving or catalog workloads.",
 		Spec: driver.RunSpec{
 			Profile: "read_heavy", Threads: 16, DurationSeconds: 300,
 			ReadPercent: 95, WritePercent: 5,
@@ -58,7 +58,7 @@ var profiles = []Profile{
 	{
 		Name:        "write_heavy",
 		DisplayName: "Write Heavy",
-		Description: "10% reads / 90% writes: ingestion, logging or IoT-style workload.",
+		Description: "10% reads / 90% writes, similar to ingestion or logging workloads.",
 		Spec: driver.RunSpec{
 			Profile: "write_heavy", Threads: 16, DurationSeconds: 300,
 			ReadPercent: 10, WritePercent: 90,
@@ -68,7 +68,7 @@ var profiles = []Profile{
 	{
 		Name:        "mixed_oltp",
 		DisplayName: "Mixed OLTP",
-		Description: "70% reads / 30% writes: balanced transactional workload, the closest analogue to classic OLTP benchmarks.",
+		Description: "70% reads / 30% writes, a balanced transactional workload.",
 		Spec: driver.RunSpec{
 			Profile: "mixed_oltp", Threads: 16, DurationSeconds: 300,
 			ReadPercent: 70, WritePercent: 30,
@@ -78,7 +78,7 @@ var profiles = []Profile{
 	{
 		Name:        "stress",
 		DisplayName: "Stress Test",
-		Description: "High concurrency against a larger dataset to find the saturation point. Expect elevated latencies.",
+		Description: "High concurrency against a larger dataset to find the saturation point.",
 		Spec: driver.RunSpec{
 			Profile: "stress", Threads: 64, DurationSeconds: 600,
 			ReadPercent: 70, WritePercent: 30,
@@ -88,7 +88,7 @@ var profiles = []Profile{
 	{
 		Name:        "custom",
 		DisplayName: "Custom",
-		Description: "Full control: every parameter set explicitly, with a driver-specific escape hatch for extra tool flags.",
+		Description: "Set every parameter yourself, including extra driver-specific flags.",
 		Spec: driver.RunSpec{
 			Profile: "custom", Threads: 8, DurationSeconds: 120,
 			ReadPercent: 70, WritePercent: 30,

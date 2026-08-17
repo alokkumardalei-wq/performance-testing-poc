@@ -87,7 +87,7 @@ func (y *YCSB) BuildScript(engine Engine, conn Connection, spec RunSpec) (string
 	// go-ycsb declares a maxexecutiontime property but its client never
 	// enforces it (verified against master: the worker loop only checks
 	// operationcount / context cancellation). Bound the run ourselves with a
-	// SIGINT watchdog — go-ycsb traps INT, cancels its context, and still
+	// SIGINT watchdog - go-ycsb traps INT, cancels its context, and still
 	// prints the final summary, exiting 0.
 	b.WriteString(fmt.Sprintf("echo '%s'\n", MarkBegin))
 	b.WriteString(fmt.Sprintf("go-ycsb run %s -P /workloads/workloada %s %s%s &\n",

@@ -3,7 +3,7 @@
 // A Driver knows how to turn a (connection, workload spec) pair into a shell
 // script that runs inside a short-lived Kubernetes Job container, and how to
 // parse the tool's stdout back into a normalized Result. The plugin core never
-// talks to sysbench/go-ycsb directly — only through this interface — so new
+// talks to sysbench/go-ycsb directly - only through this interface - so new
 // tools (pgbench, HammerDB, ...) can be added without touching the runner, the
 // store, the API, or the UI.
 package driver

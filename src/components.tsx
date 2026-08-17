@@ -5,8 +5,6 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import type { RunStatus } from './types';
 
-// Status → MUI semantic color. Status colors are reserved for state and are
-// not reused as chart series colors.
 const statusColor: Record<RunStatus, 'default' | 'info' | 'success' | 'error' | 'warning'> = {
   pending: 'default',
   running: 'info',
@@ -19,26 +17,24 @@ export function StatusChip({ status }: { status: RunStatus }) {
   return (
     <Chip
       size="small"
+      variant="outlined"
       label={status}
       color={statusColor[status]}
-      icon={status === 'running' ? <CircularProgress size={12} color="inherit" /> : undefined}
-      sx={{ textTransform: 'capitalize' }}
+      icon={status === 'running' ? <CircularProgress size={11} color="inherit" /> : undefined}
+      sx={{ textTransform: 'capitalize', height: 22 }}
     />
   );
 }
 
-// StatTile: a headline number is a tile, not a chart.
 export function StatTile({ label, value, unit, hint }: {
   label: string; value: string; unit?: string; hint?: string;
 }) {
   return (
-    <Paper variant="outlined" sx={{ p: 2, minWidth: 150, flex: 1 }}>
-      <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>
-        {label}
-      </Typography>
+    <Paper variant="outlined" sx={{ px: 2, py: 1.25, minWidth: 150 }}>
+      <Typography variant="caption" color="text.secondary">{label}</Typography>
       <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-        <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>{value}</Typography>
-        {unit && <Typography variant="body2" color="text.secondary">{unit}</Typography>}
+        <Typography component="div" sx={{ fontSize: 19, fontWeight: 600, lineHeight: 1.3, fontVariantNumeric: 'tabular-nums' }}>{value}</Typography>
+        {unit && <Typography sx={{ fontSize: 12, color: 'text.secondary' }}>{unit}</Typography>}
       </Box>
       {hint && <Typography variant="caption" color="text.secondary">{hint}</Typography>}
     </Paper>

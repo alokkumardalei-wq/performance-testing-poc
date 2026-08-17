@@ -3,9 +3,9 @@ import type {
   Comparison, DriverInfo, Instance, PluginFetch, Profile, Run, RunSpec,
 } from './types';
 
-// api.fetch is handed to the plugin's isolated React tree via props → context
-// (not a window global): the wrapper component receives it from register()
-// and provides it here.
+// api.fetch is handed to the plugin's isolated React tree through props and
+// context (not a window global): the wrapper component receives it from
+// register() and provides it here.
 export const PluginFetchContext = createContext<PluginFetch | null>(null);
 
 export function usePluginFetch(): PluginFetch {

@@ -16168,19 +16168,20 @@ function KT({ status: e }) {
     Gz,
     {
       size: "small",
+      variant: "outlined",
       label: e,
       color: Yz[e],
-      icon: e === "running" ? /* @__PURE__ */ S.jsx(Wy, { size: 12, color: "inherit" }) : void 0,
-      sx: { textTransform: "capitalize" }
+      icon: e === "running" ? /* @__PURE__ */ S.jsx(Wy, { size: 11, color: "inherit" }) : void 0,
+      sx: { textTransform: "capitalize", height: 22 }
     }
   );
 }
 function Di({ label: e, value: t, unit: n, hint: r }) {
-  return /* @__PURE__ */ S.jsxs(Ro, { variant: "outlined", sx: { p: 2, minWidth: 150, flex: 1 }, children: [
-    /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", sx: { textTransform: "uppercase", letterSpacing: 0.5 }, children: e }),
+  return /* @__PURE__ */ S.jsxs(Ro, { variant: "outlined", sx: { px: 2, py: 1.25, minWidth: 150 }, children: [
+    /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", children: e }),
     /* @__PURE__ */ S.jsxs(Nn, { sx: { display: "flex", alignItems: "baseline", gap: 0.5 }, children: [
-      /* @__PURE__ */ S.jsx(Ge, { variant: "h5", component: "div", sx: { fontWeight: 600 }, children: t }),
-      n && /* @__PURE__ */ S.jsx(Ge, { variant: "body2", color: "text.secondary", children: n })
+      /* @__PURE__ */ S.jsx(Ge, { component: "div", sx: { fontSize: 19, fontWeight: 600, lineHeight: 1.3, fontVariantNumeric: "tabular-nums" }, children: t }),
+      n && /* @__PURE__ */ S.jsx(Ge, { sx: { fontSize: 12, color: "text.secondary" }, children: n })
     ] }),
     r && /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", children: r })
   ] });
@@ -16219,21 +16220,23 @@ function Xz({ open: e, onClose: t, aID: n, bID: r }) {
       a && /* @__PURE__ */ S.jsx(Co, { severity: "error", children: a }),
       i && /* @__PURE__ */ S.jsxs(S.Fragment, { children: [
         !i.comparable && /* @__PURE__ */ S.jsxs(Co, { severity: "warning", sx: { mb: 2 }, children: [
-          /* @__PURE__ */ S.jsx(Ge, { variant: "body2", sx: { fontWeight: 600 }, children: "These runs were measured under different conditions — deltas below are not a like-for-like comparison." }),
+          /* @__PURE__ */ S.jsx(Ge, { variant: "body2", sx: { fontWeight: 600 }, children: "These runs used different configurations, so the deltas below may not be meaningful:" }),
           /* @__PURE__ */ S.jsx("ul", { style: { margin: "4px 0 0", paddingLeft: 18 }, children: i.differences.map((c) => /* @__PURE__ */ S.jsx("li", { children: /* @__PURE__ */ S.jsx(Ge, { variant: "caption", children: c }) }, c)) })
         ] }),
         /* @__PURE__ */ S.jsxs(Yu, { size: "small", children: [
           /* @__PURE__ */ S.jsx(Yy, { children: /* @__PURE__ */ S.jsxs(ti, { children: [
             /* @__PURE__ */ S.jsx(Ee, { children: "Metric" }),
             /* @__PURE__ */ S.jsxs(Ee, { align: "right", children: [
-              "A · ",
-              fl(i.a.createdAt)
+              "A (",
+              fl(i.a.createdAt),
+              ")"
             ] }),
             /* @__PURE__ */ S.jsxs(Ee, { align: "right", children: [
-              "B · ",
-              fl(i.b.createdAt)
+              "B (",
+              fl(i.b.createdAt),
+              ")"
             ] }),
-            /* @__PURE__ */ S.jsx(Ee, { align: "right", children: "Δ (A→B)" })
+            /* @__PURE__ */ S.jsx(Ee, { align: "right", children: "Change" })
           ] }) }),
           /* @__PURE__ */ S.jsx(Ku, { children: Kz.map((c) => {
             const u = c.get(i, "a"), d = c.get(i, "b");
@@ -20524,7 +20527,7 @@ function aF({ open: e, onClose: t, onCreated: n, namespace: r, instanceName: o, 
   };
   return /* @__PURE__ */ S.jsxs(WT, { open: e, onClose: t, maxWidth: "md", fullWidth: !0, children: [
     /* @__PURE__ */ S.jsxs(YT, { children: [
-      "New benchmark run — ",
+      "New benchmark run for ",
       o
     ] }),
     /* @__PURE__ */ S.jsxs(GT, { children: [
@@ -20534,10 +20537,13 @@ function aF({ open: e, onClose: t, onCreated: n, namespace: r, instanceName: o, 
         Jz,
         {
           variant: "outlined",
-          sx: { borderColor: M.name === d ? "primary.main" : void 0, borderWidth: M.name === d ? 2 : 1 },
-          children: /* @__PURE__ */ S.jsx(oj, { onClick: () => p(M.name), sx: { height: "100%" }, children: /* @__PURE__ */ S.jsxs(lj, { children: [
-            /* @__PURE__ */ S.jsx(Ge, { variant: "subtitle2", children: M.displayName }),
-            /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", children: M.description })
+          sx: {
+            borderColor: M.name === d ? "primary.main" : "divider",
+            bgcolor: M.name === d ? "#f2f7fd" : "background.paper"
+          },
+          children: /* @__PURE__ */ S.jsx(oj, { onClick: () => p(M.name), sx: { height: "100%" }, children: /* @__PURE__ */ S.jsxs(lj, { sx: { p: 1.5, "&:last-child": { pb: 1.5 } }, children: [
+            /* @__PURE__ */ S.jsx(Ge, { variant: "subtitle2", sx: { mb: 0.25 }, children: M.displayName }),
+            /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", sx: { lineHeight: 1.4, display: "block" }, children: M.description })
           ] }) })
         },
         M.name
@@ -20553,7 +20559,6 @@ function aF({ open: e, onClose: t, onCreated: n, namespace: r, instanceName: o, 
             value: f,
             onChange: (M) => h(M.target.value),
             sx: { minWidth: 180 },
-            helperText: "Auto picks the best driver",
             children: [
               /* @__PURE__ */ S.jsx(db, { value: "", children: "Auto" }),
               A.map((M) => /* @__PURE__ */ S.jsx(db, { value: M.name, children: M.name }, M.name))
@@ -20603,13 +20608,13 @@ function aF({ open: e, onClose: t, onCreated: n, namespace: r, instanceName: o, 
         b.spec.readPercent,
         "% reads / ",
         b.spec.writePercent,
-        "% writes ·",
+        "% writes,",
         " ",
         g || b.spec.threads,
-        " threads · ",
+        " threads, ",
         y || b.spec.durationSeconds,
         "s",
-        i === "mongodb" ? ` · ${b.spec.records.toLocaleString()} documents` : ` · ${b.spec.tables} tables × ${b.spec.tableSize.toLocaleString()} rows`
+        i === "mongodb" ? `, ${b.spec.records.toLocaleString()} documents` : `, ${b.spec.tables} tables x ${b.spec.tableSize.toLocaleString()} rows`
       ] })
     ] }),
     /* @__PURE__ */ S.jsxs(VT, { children: [
@@ -21258,11 +21263,12 @@ function MF({ run: e, onBack: t, onCancel: n }) {
   const l = e.fingerprint, c = e.result;
   return /* @__PURE__ */ S.jsxs(Nn, { children: [
     /* @__PURE__ */ S.jsxs(Nn, { sx: { display: "flex", alignItems: "center", gap: 2, mb: 2 }, children: [
-      /* @__PURE__ */ S.jsx(Po, { size: "small", onClick: t, children: "← All runs" }),
+      /* @__PURE__ */ S.jsx(Po, { size: "small", onClick: t, children: "Back" }),
       /* @__PURE__ */ S.jsxs(Ge, { variant: "h6", sx: { flex: 1 }, children: [
         e.profile,
-        " · ",
-        e.driver
+        " (",
+        e.driver,
+        ")"
       ] }),
       /* @__PURE__ */ S.jsx(KT, { status: e.status }),
       (e.status === "running" || e.status === "pending") && /* @__PURE__ */ S.jsx(Po, { size: "small", color: "warning", variant: "outlined", onClick: () => n(e), children: "Cancel run" })
@@ -21270,12 +21276,12 @@ function MF({ run: e, onBack: t, onCancel: n }) {
     /* @__PURE__ */ S.jsxs(Ge, { variant: "body2", color: "text.secondary", sx: { mb: 2 }, children: [
       "Started ",
       fl(e.startedAt ?? e.createdAt),
-      e.finishedAt ? ` · finished ${fl(e.finishedAt)}` : "",
-      " · ",
+      e.finishedAt ? `, finished ${fl(e.finishedAt)}` : "",
+      ", ",
       e.spec.threads,
-      " threads · ",
+      " threads, ",
       e.spec.durationSeconds,
-      "s ·",
+      "s,",
       " ",
       e.spec.readPercent,
       "/",
@@ -21284,11 +21290,11 @@ function MF({ run: e, onBack: t, onCancel: n }) {
     ] }),
     e.message && e.status === "failed" && /* @__PURE__ */ S.jsx(Co, { severity: "error", sx: { mb: 2 }, children: e.message }),
     e.status === "running" && /* @__PURE__ */ S.jsxs(Co, { severity: "info", sx: { mb: 2 }, children: [
-      "Benchmark job ",
+      "Job ",
       e.jobName,
       " is running in namespace ",
       e.namespace,
-      ". The prepare/load phase can take a while on larger datasets; results appear here when the job completes."
+      ". Results will show up here once it finishes."
     ] }),
     c && /* @__PURE__ */ S.jsxs(S.Fragment, { children: [
       /* @__PURE__ */ S.jsxs(Nn, { sx: { display: "flex", gap: 2, flexWrap: "wrap", mb: 2 }, children: [
@@ -21321,17 +21327,17 @@ function MF({ run: e, onBack: t, onCancel: n }) {
     ] }),
     l && /* @__PURE__ */ S.jsxs(S.Fragment, { children: [
       /* @__PURE__ */ S.jsx(wj, { sx: { my: 2 } }),
-      /* @__PURE__ */ S.jsx(Ge, { variant: "subtitle2", sx: { mb: 1 }, children: "Environment fingerprint" }),
+      /* @__PURE__ */ S.jsx(Ge, { variant: "subtitle2", sx: { mb: 1 }, children: "Environment" }),
       l.isolated === !1 && /* @__PURE__ */ S.jsxs(Co, { severity: "warning", sx: { mb: 1 }, children: [
-        "The load generator ran on the same node as the database (",
+        "The benchmark pod was scheduled on the same node as the database (",
         l.generatorNode,
-        "). Numbers from this run understate what the database can do."
+        "), so results may be affected by resource contention."
       ] }),
       /* @__PURE__ */ S.jsx(Yu, { size: "small", sx: { maxWidth: 640, mb: 2 }, children: /* @__PURE__ */ S.jsx(Ku, { children: [
         ["Engine", `${l.engine} ${l.engineVersion ?? ""}`],
         ["Replicas", l.replicas ? String(l.replicas) : "—"],
         ["DB resources", [l.cpuLimit, l.memoryLimit].filter(Boolean).join(" / ") || "—"],
-        ["Storage", [l.storageClass, l.storageSize].filter(Boolean).join(" · ") || "—"],
+        ["Storage", [l.storageClass, l.storageSize].filter(Boolean).join(", ") || "—"],
         ["Driver image", l.driverImage],
         ["Generator node", l.generatorNode ?? "—"],
         ["Database nodes", ((u = l.databaseNodes) == null ? void 0 : u.join(", ")) ?? "—"],
@@ -37773,7 +37779,7 @@ function dS({ title: e, context: t, unit: n, color: r, points: o }) {
       /* @__PURE__ */ S.jsxs(Ge, { component: "span", variant: "caption", color: "text.secondary", children: [
         "(",
         n,
-        ") · ",
+        "), ",
         t
       ] })
     ] }),
@@ -37801,7 +37807,7 @@ function IK({ runs: e }) {
   if (t.length < 2) return null;
   const n = t[t.length - 1], r = t.filter((l) => l.profile === n.profile && l.driver === n.driver && l.spec.threads === n.spec.threads && l.spec.durationSeconds === n.spec.durationSeconds);
   if (r.length < 2) return null;
-  const o = `${n.profile} · ${n.driver} · ${n.spec.threads} threads`, i = r.map((l) => new Date(l.createdAt).toLocaleTimeString(void 0, { hour: "2-digit", minute: "2-digit" })), s = new Set(i).size < i.length, a = (l) => new Date(l.createdAt).toLocaleTimeString(void 0, {
+  const o = `${n.profile}, ${n.driver}, ${n.spec.threads} threads`, i = r.map((l) => new Date(l.createdAt).toLocaleTimeString(void 0, { hour: "2-digit", minute: "2-digit" })), s = new Set(i).size < i.length, a = (l) => new Date(l.createdAt).toLocaleTimeString(void 0, {
     hour: "2-digit",
     minute: "2-digit",
     ...s ? { second: "2-digit" } : {}
@@ -37830,17 +37836,50 @@ function IK({ runs: e }) {
       )
     ] }),
     r.length < t.length && /* @__PURE__ */ S.jsxs(Ge, { variant: "caption", color: "text.secondary", children: [
-      "Showing only the ",
+      "Showing the ",
       r.length,
-      " runs matching the latest configuration (",
+      " runs with the same settings as the latest run (",
       o,
-      ") — runs with different profiles or settings are excluded from the trend because they are not comparable."
+      "). Runs with other settings are left out of the trend."
     ] })
   ] });
 }
 const PK = bf({
-  palette: { primary: { main: "#0e5fb5" } },
-  typography: { fontFamily: "Poppins, Roboto, Helvetica, Arial, sans-serif" }
+  palette: {
+    primary: { main: "#1d4f91" },
+    background: { default: "#fafafa" },
+    text: { primary: "#1c2430", secondary: "#5b6572" },
+    divider: "#e3e6ea"
+  },
+  shape: { borderRadius: 4 },
+  typography: {
+    fontFamily: "Inter, Roboto, Helvetica, Arial, sans-serif",
+    fontSize: 13,
+    h6: { fontSize: 16, fontWeight: 600 },
+    subtitle2: { fontWeight: 600, fontSize: 12.5 },
+    button: { textTransform: "none", fontWeight: 600 }
+  },
+  components: {
+    MuiButton: {
+      defaultProps: { disableElevation: !0, size: "small" }
+    },
+    MuiChip: {
+      styleOverrides: { root: { fontWeight: 600, fontSize: 11.5 } }
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontSize: 12.5,
+          fontWeight: 600,
+          color: "#5b6572"
+        },
+        root: { fontSize: 12.5, paddingTop: 7, paddingBottom: 7 }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: { outlined: { borderColor: "#e3e6ea" } }
+    }
+  }
 });
 function MK({ namespace: e, instanceName: t, engine: n }) {
   const [r, o] = w.useState([]), [i, s] = w.useState(""), [a, l] = w.useState(n), [c, u] = w.useState(null), [d, p] = w.useState(!1), [f, h] = w.useState([]), [g, x] = w.useState(!1), y = Ef(), m = w.useCallback(() => {
@@ -37894,7 +37933,7 @@ function MK({ namespace: e, instanceName: t, engine: n }) {
     r.length === 0 && !i ? /* @__PURE__ */ S.jsxs(Co, { severity: "info", children: [
       "No benchmark runs yet for ",
       t,
-      ". Start one with “New run” — pick a workload profile and the plugin does the rest: credentials, an isolated benchmark job, and normalized results you can compare over time."
+      '. Click "New run" to start one.'
     ] }) : /* @__PURE__ */ S.jsxs(Yu, { size: "small", children: [
       /* @__PURE__ */ S.jsx(Yy, { children: /* @__PURE__ */ S.jsxs(ti, { children: [
         /* @__PURE__ */ S.jsx(Ee, { padding: "checkbox" }),
@@ -37937,7 +37976,7 @@ function MK({ namespace: e, instanceName: t, engine: n }) {
         );
       }) })
     ] }),
-    T.length >= 1 && f.length < 2 && /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", sx: { display: "block", mt: 1 }, children: "Select two completed runs to compare them. Comparisons warn when the runs were measured under different conditions." }),
+    T.length >= 1 && f.length < 2 && /* @__PURE__ */ S.jsx(Ge, { variant: "caption", color: "text.secondary", sx: { display: "block", mt: 1 }, children: "Select two succeeded runs to compare them." }),
     /* @__PURE__ */ S.jsx(
       aF,
       {
@@ -37998,8 +38037,8 @@ function RK(e) {
     type: "clusterDetailTab",
     label: "Performance",
     path: "performance",
-    // Note: `providers` deliberately omitted — the documented values do not
-    // match what the v2 filter compares against (see docs/architecture.md);
+    // `providers` is deliberately omitted: the documented values do not match
+    // what the v2 filter compares against (see docs/architecture.md), so
     // engine compatibility is handled inside the component instead.
     component: n
   });

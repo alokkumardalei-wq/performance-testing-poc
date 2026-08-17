@@ -1,9 +1,9 @@
 // Package server exposes the plugin's HTTP surface.
 //
 // Contract with the OpenEverest host (see the generic plugin design doc):
-//   - GET /main.js, /icon.png  — the embedded frontend bundle
-//   - GET /healthz             — liveness/readiness
-//   - /api/...                 — the plugin API, reached through the host
+//   - GET /main.js, /icon.png  - the embedded frontend bundle
+//   - GET /healthz             - liveness/readiness
+//   - /api/...                 - the plugin API, reached through the host
 //     proxy at /v1/plugins/performance/api/... with auth attached.
 //
 // Note: the host proxies GET /v1/plugins/{name}/* without authentication so

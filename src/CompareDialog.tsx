@@ -15,8 +15,6 @@ import { api, usePluginFetch } from './api';
 import { fmtDate, fmtNum } from './components';
 import type { Comparison } from './types';
 
-// For latency lower is better; for throughput higher is better. deltaGood
-// maps the sign onto "improved"/"regressed" per metric.
 const metricRows: { key: string; label: string; unit: string; higherIsBetter: boolean; get: (c: Comparison, side: 'a' | 'b') => number | undefined }[] = [
   { key: 'throughputOps', label: 'Throughput', unit: 'ops/s', higherIsBetter: true, get: (c, s) => c[s].result?.throughputOps },
   { key: 'qps', label: 'Queries', unit: 'q/s', higherIsBetter: true, get: (c, s) => c[s].result?.qps },
@@ -48,8 +46,8 @@ export function CompareDialog({ open, onClose, aID, bID }: {
             {!cmp.comparable && (
               <Alert severity="warning" sx={{ mb: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                  These runs were measured under different conditions — deltas below are not a
-                  like-for-like comparison.
+                  These runs used different configurations, so the deltas below may not be
+                  meaningful:
                 </Typography>
                 <ul style={{ margin: '4px 0 0', paddingLeft: 18 }}>
                   {cmp.differences.map((d) => <li key={d}><Typography variant="caption">{d}</Typography></li>)}
@@ -60,9 +58,9 @@ export function CompareDialog({ open, onClose, aID, bID }: {
               <TableHead>
                 <TableRow>
                   <TableCell>Metric</TableCell>
-                  <TableCell align="right">A · {fmtDate(cmp.a.createdAt)}</TableCell>
-                  <TableCell align="right">B · {fmtDate(cmp.b.createdAt)}</TableCell>
-                  <TableCell align="right">Δ (A→B)</TableCell>
+                  <TableCell align="right">A ({fmtDate(cmp.a.createdAt)})</TableCell>
+                  <TableCell align="right">B ({fmtDate(cmp.b.createdAt)})</TableCell>
+                  <TableCell align="right">Change</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

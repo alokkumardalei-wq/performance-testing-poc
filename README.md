@@ -1,59 +1,137 @@
 # OpenEverest Performance-Testing Plugin (POC)
 
-> Built as the proof of concept accompanying my LFX Mentorship 2026 Term 3
-> application for [openeverest/openeverest#2464](https://github.com/openeverest/openeverest/issues/2464).
+Proof of concept for [openeverest/openeverest#2464](https://github.com/openeverest/openeverest/issues/2464),
+built for my LFX Mentorship 2026 Term 3 application: benchmark databases managed
+by OpenEverest from the dashboard or the CLI. No manual tool installs, no
+digging connection strings out of Secrets.
 
-A working proof-of-concept for [openeverest/openeverest#2464](https://github.com/openeverest/openeverest/issues/2464):
-benchmark databases managed by OpenEverest from the dashboard or the CLI — no
-manual tool installs, no connection-string archaeology, no Kubernetes wrestling.
+Pick a database, pick a workload profile, run. Results are normalized and
+fingerprinted so they can honestly be compared over time.
 
-Pick a database → choose a **workload profile** → run → see normalized,
-**fingerprinted** results you can honestly compare over time.
+![Performance tab: run history with throughput and p95 trends](docs/screenshots/tab.png)
+
+The trend charts only connect runs with identical settings - runs measured
+differently are left out instead of being plotted as if they were comparable.
 
 ```
-UI (clusterDetailTab) ──┐
-                        ├── plugin backend ── Kubernetes Job (sysbench / go-ycsb)
-CLI (everest-perf) ─────┘        │                   │
+UI (clusterDetailTab) --+
+                        +-- plugin backend -- Kubernetes Job (sysbench / go-ycsb)
+CLI (everest-perf) -----+        |                   |
                               SQLite store        target database
 ```
 
-## What it does
+## Try it in ~5 minutes
 
-- **Workload profiles instead of tool flags** — Smoke, Read Heavy, Write Heavy,
-  Mixed OLTP, Stress, Custom. A profile resolves to an engine-independent
-  `RunSpec`; the driver translates it into tool-specific configuration.
-- **Two drivers behind one narrow interface** —
-  [`sysbench`](backend/internal/driver/sysbench.go) for relational OLTP
-  (MySQL, PostgreSQL) and [`go-ycsb`](backend/internal/driver/ycsb.go) for
-  cross-engine coverage (MongoDB + MySQL + PostgreSQL). One relational + one
-  non-relational engine covered, and two drivers keep the
-  [`Driver` interface](backend/internal/driver/driver.go) honest.
-- **Execution as short-lived Kubernetes Jobs** with pod **anti-affinity** so
-  the load generator stays off the database's node. Whether isolation actually
-  held is *recorded per run*, not assumed.
-- **Credentials are never persisted** — resolved at run start (the same data
-  the Everest credentials endpoint serves), injected via a Job-owned Secret,
-  garbage-collected with the Job.
-- **Environment fingerprints** — every run stores engine version, topology,
+Prereqs: Go >= 1.25, Node >= 20, Docker, kind, kubectl.
+
+```bash
+# 1. Build the frontend bundle and the backend
+npm install && npm run build
+cp dist/main.js backend/dist/main.js
+cd backend && go build -o plugin-backend . && cd ..
+
+# 2. Create a kind cluster with demo databases (PostgreSQL + MongoDB)
+#    and load the driver images
+./scripts/demo-e2e.sh up
+
+# 3. Start the backend against it (demo-env.sh registers the demo
+#    databases as static instances)
+source scripts/demo-env.sh && ./backend/plugin-backend
+
+# 4. In a second terminal: the UI sandbox
+npm run dev
+# open http://localhost:3001/?namespace=default&instance=pg-demo
+```
+
+Tear down with `./scripts/demo-e2e.sh down`.
+
+## A run, start to finish
+
+**Start a run.** Users pick a workload shape, not tool flags - the plugin
+translates the profile into sysbench or go-ycsb configuration internally.
+
+![New run dialog with workload profiles](docs/screenshots/new-run.png)
+
+**Read the result.** Normalized metrics up top, environment fingerprint below.
+On this single-node demo cluster the plugin flags that the load generator
+shared a node with the database, instead of presenting the number as clean.
+The raw tool transcript is kept with every run, so a parsing failure loses
+convenience, not data.
+
+![Run detail: metrics and environment fingerprint](docs/screenshots/run-detail.png)
+
+**Compare two runs.** Per-metric deltas, green for improvement, red for
+regression. If the two runs were measured under different conditions
+(different thread count, resources, engine version...), the dialog says so
+and lists exactly what differed instead of pretending the numbers are
+like-for-like.
+
+![Compare dialog with per-metric deltas](docs/screenshots/compare.png)
+
+## The same thing from CI
+
+```console
+$ ./everest-perf run --namespace default --instance pg-demo \
+    --profile mixed_oltp --threads 2 --duration 20 --wait \
+    --baseline 1139381c-4d6d-46a0-b08b-81d57bede09d --max-regression 10
+run 257e871f-1f38-47c3-b234-d1e0812f8438 started (profile=mixed_oltp driver=sysbench)
+  status: running
+  ...
+run 257e871f-1f38-47c3-b234-d1e0812f8438  [succeeded]
+  throughput: 1291.2 ops/s
+  queries:    25824.8 q/s
+  latency:    avg 1.55 ms, p95 3.13 ms
+  total ops:  25834 (errors: 0)
+baseline check ok (throughput Δ 15.1%)
+$ echo $?
+0
+```
+
+Exit codes are the CI integration: 0 ok, 1 usage/transport error, 2 run
+failed, 3 threshold or regression violated. A pipeline step fails
+automatically when the database got slower than its stored baseline.
+
+```bash
+go build -o everest-perf ./backend/cmd/everest-perf
+./everest-perf run --namespace default --instance pg-demo --profile smoke --wait
+./everest-perf list --namespace default --instance pg-demo
+./everest-perf compare --a <id> --b <id>
+```
+
+## What this POC demonstrates
+
+- **Workload profiles instead of tool flags** - Smoke, Read Heavy, Write
+  Heavy, Mixed OLTP, Stress, Custom. A profile resolves to an
+  engine-independent `RunSpec`; the driver translates it.
+- **Two drivers behind one narrow interface** -
+  [`sysbench`](backend/internal/driver/sysbench.go) for relational OLTP and
+  [`go-ycsb`](backend/internal/driver/ycsb.go) for MongoDB (plus MySQL and
+  PostgreSQL). Two drivers keep the
+  [`Driver` interface](backend/internal/driver/driver.go) honest; adding a
+  third tool touches nothing outside `internal/driver/`.
+- **Execution as short-lived Kubernetes Jobs** with pod anti-affinity so the
+  load generator stays off the database's node. Whether isolation actually
+  held is recorded per run, not assumed.
+- **Credentials are never persisted** - resolved at run start, injected via a
+  Job-owned Secret, garbage-collected with the Job. They never appear in env
+  vars, argv, or the generated script.
+- **Environment fingerprints** - every run stores engine version, topology,
   resources, storage class, driver image, workload parameters and generator
-  placement. Comparisons between mismatched fingerprints are shown with an
-  explicit "these are not like-for-like" warning listing exactly what differed.
-- **Results retained** in SQLite behind a
-  [`Store` interface](backend/internal/store/model.go). Ephemeral by default
-  (emptyDir — no PVC unless you opt in via chart values), matching the
-  maintainers' guidance; the interface is the migration path to external
-  PostgreSQL or a plugin CRD later.
-- **CI/CD-ready CLI** — `everest-perf run --wait --min-throughput …
-  --baseline <id> --max-regression 10` with meaningful exit codes (0 ok,
-  2 run failed, 3 threshold/regression violated).
+  placement. Comparisons between mismatched fingerprints get an explicit
+  warning listing what differed.
+- **Results in SQLite** behind a
+  [`Store` interface](backend/internal/store/model.go), ephemeral by default
+  (emptyDir, no PVC unless you opt in via chart values), matching the
+  maintainers' guidance on the issue. The interface is the migration path to
+  an external PostgreSQL store.
 
 ## Repository layout
 
 ```
-backend/                  Go backend (module github.com/openeverest/plugin-performance/backend)
+backend/                  Go backend
   main.go                 HTTP server: /main.js, /healthz, /api/...
   internal/driver/        Driver interface + sysbench + go-ycsb
-  internal/profile/       Workload profiles → RunSpec
+  internal/profile/       Workload profiles -> RunSpec
   internal/runner/        Kubernetes Job lifecycle, anti-affinity, placement capture
   internal/store/         Store interface + SQLite implementation
   internal/everest/       Instance discovery + connection/credential resolution
@@ -62,60 +140,15 @@ backend/                  Go backend (module github.com/openeverest/plugin-perfo
 src/                      React frontend (bundled per plugin contract: one ES module)
 charts/performance-plugin Helm chart: Deployment, Service, RBAC, Plugin CR, optional PVC
 Dockerfile                Backend image (UI embedded via go:embed)
+Dockerfile.sysbench       sysbench driver image
 Dockerfile.ycsb           go-ycsb driver image
 test-plugin.yaml          Local-dev Plugin CR (externalUrl + vite dev server)
 docs/architecture.md      Design decisions and trade-offs
-scripts/demo-e2e.sh       End-to-end demo on a kind cluster
+docs/demo-script.md       A rehearsed ~6 minute demo walkthrough
+scripts/demo-e2e.sh       End-to-end demo environment on kind
 ```
 
-## Quick start (local, no full Everest install needed)
-
-Prereqs: Go ≥1.25, Node ≥20, Docker, kind, kubectl.
-
-```bash
-# 1. Frontend bundle + backend
-npm install && npm run build
-cp dist/main.js backend/dist/main.js
-cd backend && go build -o plugin-backend . && cd ..
-
-# 2. A cluster with demo databases (PostgreSQL + MongoDB) and driver images
-./scripts/demo-e2e.sh up
-
-# 3. Run the backend against the cluster (demo-env.sh registers the demo
-#    databases as static instances so the UI can target them directly)
-source scripts/demo-env.sh && ./backend/plugin-backend
-
-# 4a. UI: dev sandbox at http://localhost:3001/?namespace=default&instance=pg-demo
-npm run dev
-
-# 4b. CLI:
-go build -o everest-perf ./backend/cmd/everest-perf
-./everest-perf run --namespace default --instance pg-demo --profile smoke --wait
-```
-
-The demo databases are plain StatefulSets labeled the way the resolver expects
-(`standalone mode` also lets you POST explicit connection details — see
-`docs/architecture.md#standalone-mode`). Against a real Everest install the
-plugin discovers `DatabaseCluster` CRs and resolves credentials from the
-engine's user secret, exactly like the Everest credentials endpoint does.
-
-## Installing into OpenEverest
-
-```bash
-helm install performance charts/performance-plugin -n everest-system
-```
-
-That deploys the backend, its RBAC (the plugin ships its own ServiceAccount +
-least-privilege ClusterRole — jobs, pods, pods/log, secrets, databaseclusters)
-and the `Plugin` CR (`extensions.openeverest.io/v1alpha1`) pointing at the
-backend's Service. The host proxies `/v1/plugins/performance/...` to the
-backend and dynamic-import()s `/main.js`, which registers a **Performance**
-tab on the database detail page.
-
-For iterating against a local k3d-hosted Everest, `kubectl apply -f
-test-plugin.yaml` points the CR at your laptop instead.
-
-## API sketch
+## API
 
 | Method & path | Purpose |
 |---|---|
@@ -125,9 +158,31 @@ test-plugin.yaml` points the CR at your laptop instead.
 | `POST /api/runs` | Start a run (profile + overrides, optional explicit connection) |
 | `GET /api/runs?instance=` | Run history |
 | `GET /api/runs/{id}` | Run detail: status, normalized result, fingerprint |
-| `GET /api/runs/{id}/output` | Raw tool output (the artifact behind the numbers) |
+| `GET /api/runs/{id}/output` | Raw tool output |
 | `POST /api/runs/{id}/cancel` | Cancel a running benchmark |
 | `GET /api/compare?a=&b=` | Deltas + fingerprint diff |
+
+## Installing into OpenEverest
+
+```bash
+helm install performance charts/performance-plugin -n everest-system
+```
+
+That deploys the backend, its RBAC (own ServiceAccount + least-privilege
+ClusterRole: jobs, pods, pods/log, secrets, databaseclusters) and the
+`Plugin` CR (`extensions.openeverest.io/v1alpha1`) pointing at the backend's
+Service. The host proxies `/v1/plugins/performance/...` to the backend and
+dynamic-import()s `/main.js`, which registers a Performance tab on the
+database detail page.
+
+For iterating against a local k3d-hosted Everest,
+`kubectl apply -f test-plugin.yaml` points the CR at your laptop instead.
+
+Against a real Everest install the plugin discovers `DatabaseCluster` CRs and
+resolves credentials from the engine's user secret, the same way the Everest
+credentials endpoint does. The demo uses plain StatefulSets registered as
+static instances; standalone mode also accepts explicit connection details
+(see `docs/architecture.md#standalone-mode`).
 
 ## Tests
 
@@ -135,18 +190,14 @@ test-plugin.yaml` points the CR at your laptop instead.
 cd backend && go test ./...
 ```
 
-Covers the output parsers (real sysbench/go-ycsb transcripts), script
+Covers the output parsers (against real sysbench/go-ycsb transcripts), script
 generation (including "password never appears in the script"), profile
-resolution/validation, the SQLite store round-trip, and Job construction
-(anti-affinity modes, no-retry policy, Job-owned credential Secret) against a
-fake clientset.
+resolution, the SQLite store round-trip, and Job construction (anti-affinity
+modes, no-retry policy, Job-owned credential Secret) against a fake clientset.
 
 ## Design notes
 
-The why behind the shape of this POC — single plugin with per-engine drivers,
-Jobs as the execution model, fingerprint-gated comparisons, ephemeral-default
-storage, and the security caveats of the current plugin proxy — is written up
-in [docs/architecture.md](docs/architecture.md).
-
-[docs/demo-script.md](docs/demo-script.md) is a rehearsed ~6-minute demo
-walkthrough (UI, CLI, CI regression gate, code tour).
+The reasoning behind the shape of this POC - single plugin with per-engine
+drivers, Jobs as the execution model, fingerprint-gated comparisons,
+ephemeral-default storage, and the security caveats of the current plugin
+proxy - is written up in [docs/architecture.md](docs/architecture.md).

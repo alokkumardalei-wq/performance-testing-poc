@@ -61,8 +61,8 @@ function register(api: PluginApi) {
     type: 'clusterDetailTab',
     label: 'Performance',
     path: 'performance',
-    // Note: `providers` deliberately omitted — the documented values do not
-    // match what the v2 filter compares against (see docs/architecture.md);
+    // `providers` is deliberately omitted: the documented values do not match
+    // what the v2 filter compares against (see docs/architecture.md), so
     // engine compatibility is handled inside the component instead.
     component: MicroFrontendWrapper,
   });

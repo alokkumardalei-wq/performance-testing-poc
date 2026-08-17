@@ -62,8 +62,8 @@ func (s *Sysbench) BuildScript(engine Engine, conn Connection, spec RunSpec) (st
 	}
 	workload := workloadScript(spec)
 
-	// A shell function (not a variable) so "$DB_PASSWORD" is expanded — with
-	// correct quoting — each time the command actually runs.
+	// A shell function (not a variable) so "$DB_PASSWORD" is expanded - with
+	// correct quoting - each time the command actually runs.
 	var b strings.Builder
 	b.WriteString("set -e\n")
 	b.WriteString(fmt.Sprintf("sb() { sysbench %s %s \"$@\"; }\n", connArgs, sizing))

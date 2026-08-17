@@ -37,9 +37,9 @@ export function RunDetail({ run, onBack, onCancel }: {
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-        <Button size="small" onClick={onBack}>← All runs</Button>
+        <Button size="small" onClick={onBack}>Back</Button>
         <Typography variant="h6" sx={{ flex: 1 }}>
-          {run.profile} · {run.driver}
+          {run.profile} ({run.driver})
         </Typography>
         <StatusChip status={run.status} />
         {(run.status === 'running' || run.status === 'pending') && (
@@ -51,8 +51,8 @@ export function RunDetail({ run, onBack, onCancel }: {
 
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Started {fmtDate(run.startedAt ?? run.createdAt)}
-        {run.finishedAt ? ` · finished ${fmtDate(run.finishedAt)}` : ''}
-        {' · '}{run.spec.threads} threads · {run.spec.durationSeconds}s ·{' '}
+        {run.finishedAt ? `, finished ${fmtDate(run.finishedAt)}` : ''}
+        {', '}{run.spec.threads} threads, {run.spec.durationSeconds}s,{' '}
         {run.spec.readPercent}/{run.spec.writePercent} read/write
       </Typography>
 
@@ -61,8 +61,8 @@ export function RunDetail({ run, onBack, onCancel }: {
       )}
       {run.status === 'running' && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          Benchmark job {run.jobName} is running in namespace {run.namespace}. The prepare/load
-          phase can take a while on larger datasets; results appear here when the job completes.
+          Job {run.jobName} is running in namespace {run.namespace}. Results will show up
+          here once it finishes.
         </Alert>
       )}
 
@@ -110,11 +110,11 @@ export function RunDetail({ run, onBack, onCancel }: {
       {fp && (
         <>
           <Divider sx={{ my: 2 }} />
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>Environment fingerprint</Typography>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Environment</Typography>
           {fp.isolated === false && (
             <Alert severity="warning" sx={{ mb: 1 }}>
-              The load generator ran on the same node as the database ({fp.generatorNode}).
-              Numbers from this run understate what the database can do.
+              The benchmark pod was scheduled on the same node as the database
+              ({fp.generatorNode}), so results may be affected by resource contention.
             </Alert>
           )}
           <Table size="small" sx={{ maxWidth: 640, mb: 2 }}>
@@ -123,7 +123,7 @@ export function RunDetail({ run, onBack, onCancel }: {
                 ['Engine', `${fp.engine} ${fp.engineVersion ?? ''}`],
                 ['Replicas', fp.replicas ? String(fp.replicas) : '—'],
                 ['DB resources', [fp.cpuLimit, fp.memoryLimit].filter(Boolean).join(' / ') || '—'],
-                ['Storage', [fp.storageClass, fp.storageSize].filter(Boolean).join(' · ') || '—'],
+                ['Storage', [fp.storageClass, fp.storageSize].filter(Boolean).join(', ') || '—'],
                 ['Driver image', fp.driverImage],
                 ['Generator node', fp.generatorNode ?? '—'],
                 ['Database nodes', fp.databaseNodes?.join(', ') ?? '—'],

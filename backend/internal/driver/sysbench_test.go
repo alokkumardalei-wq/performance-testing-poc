@@ -106,7 +106,7 @@ func TestSysbenchBuildScript(t *testing.T) {
 		t.Error("plaintext password leaked into script")
 	}
 	// Regression: $DB_PASSWORD must sit in a shell *function*, not a
-	// single-quoted variable — parameter expansion does not happen inside
+	// single-quoted variable - parameter expansion does not happen inside
 	// text produced by expanding another variable, so `SB='... $DB_PASSWORD'`
 	// sends the literal string to the database.
 	if !strings.Contains(script, "sb() {") {

@@ -3,7 +3,7 @@
 // Design decisions (see docs/architecture.md):
 //   - One Job per run, restartPolicy Never, backoffLimit 0: a benchmark that
 //     crashed is a failed run, not something to retry silently.
-//   - Pod anti-affinity keeps the load generator off the database's node —
+//   - Pod anti-affinity keeps the load generator off the database's node -
 //     a generator sharing CPU with the process it measures produces a number
 //     not worth storing. Whether isolation actually held is recorded in the
 //     run's fingerprint rather than assumed.

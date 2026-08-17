@@ -20,8 +20,39 @@ import { StatusChip, fmtDate, fmtNum } from './components';
 import type { Engine, PluginFetch, Run } from './types';
 
 const theme = createTheme({
-  palette: { primary: { main: '#0e5fb5' } },
-  typography: { fontFamily: 'Poppins, Roboto, Helvetica, Arial, sans-serif' },
+  palette: {
+    primary: { main: '#1d4f91' },
+    background: { default: '#fafafa' },
+    text: { primary: '#1c2430', secondary: '#5b6572' },
+    divider: '#e3e6ea',
+  },
+  shape: { borderRadius: 4 },
+  typography: {
+    fontFamily: 'Inter, Roboto, Helvetica, Arial, sans-serif',
+    fontSize: 13,
+    h6: { fontSize: 16, fontWeight: 600 },
+    subtitle2: { fontWeight: 600, fontSize: 12.5 },
+    button: { textTransform: 'none', fontWeight: 600 },
+  },
+  components: {
+    MuiButton: {
+      defaultProps: { disableElevation: true, size: 'small' },
+    },
+    MuiChip: {
+      styleOverrides: { root: { fontWeight: 600, fontSize: 11.5 } },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontSize: 12.5, fontWeight: 600, color: '#5b6572',
+        },
+        root: { fontSize: 12.5, paddingTop: 7, paddingBottom: 7 },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: { outlined: { borderColor: '#e3e6ea' } },
+    },
+  },
 });
 
 export interface PerformanceTabProps {
@@ -113,9 +144,7 @@ function RunsView({ namespace, instanceName, engine }: { namespace: string; inst
 
       {runs.length === 0 && !error ? (
         <Alert severity="info">
-          No benchmark runs yet for {instanceName}. Start one with “New run” — pick a workload
-          profile and the plugin does the rest: credentials, an isolated benchmark job, and
-          normalized results you can compare over time.
+          No benchmark runs yet for {instanceName}. Click "New run" to start one.
         </Alert>
       ) : (
         <Table size="small">
@@ -162,8 +191,7 @@ function RunsView({ namespace, instanceName, engine }: { namespace: string; inst
 
       {succeeded.length >= 1 && compareSel.length < 2 && (
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-          Select two completed runs to compare them. Comparisons warn when the runs were
-          measured under different conditions.
+          Select two succeeded runs to compare them.
         </Typography>
       )}
 

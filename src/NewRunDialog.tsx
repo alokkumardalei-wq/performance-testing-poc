@@ -76,7 +76,7 @@ export function NewRunDialog({ open, onClose, onCreated, namespace, instanceName
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>New benchmark run — {instanceName}</DialogTitle>
+      <DialogTitle>New benchmark run for {instanceName}</DialogTitle>
       <DialogContent>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         <Typography variant="subtitle2" sx={{ mb: 1 }}>Workload profile</Typography>
@@ -85,12 +85,17 @@ export function NewRunDialog({ open, onClose, onCreated, namespace, instanceName
             <Card
               key={p.name}
               variant="outlined"
-              sx={{ borderColor: p.name === profileName ? 'primary.main' : undefined, borderWidth: p.name === profileName ? 2 : 1 }}
+              sx={{
+                borderColor: p.name === profileName ? 'primary.main' : 'divider',
+                bgcolor: p.name === profileName ? '#f2f7fd' : 'background.paper',
+              }}
             >
               <CardActionArea onClick={() => setProfileName(p.name)} sx={{ height: '100%' }}>
-                <CardContent>
-                  <Typography variant="subtitle2">{p.displayName}</Typography>
-                  <Typography variant="caption" color="text.secondary">{p.description}</Typography>
+                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                  <Typography variant="subtitle2" sx={{ mb: 0.25 }}>{p.displayName}</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4, display: 'block' }}>
+                    {p.description}
+                  </Typography>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -103,7 +108,6 @@ export function NewRunDialog({ open, onClose, onCreated, namespace, instanceName
             select size="small" label="Driver" value={driverName}
             onChange={(e) => setDriverName(e.target.value)}
             sx={{ minWidth: 180 }}
-            helperText="Auto picks the best driver"
           >
             <MenuItem value="">Auto</MenuItem>
             {compatibleDrivers.map((d) => <MenuItem key={d.name} value={d.name}>{d.name}</MenuItem>)}
@@ -131,11 +135,11 @@ export function NewRunDialog({ open, onClose, onCreated, namespace, instanceName
         </Box>
         {selected && (
           <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2 }}>
-            {selected.spec.readPercent}% reads / {selected.spec.writePercent}% writes ·{' '}
-            {threads || selected.spec.threads} threads · {duration || selected.spec.durationSeconds}s
+            {selected.spec.readPercent}% reads / {selected.spec.writePercent}% writes,{' '}
+            {threads || selected.spec.threads} threads, {duration || selected.spec.durationSeconds}s
             {engine === 'mongodb'
-              ? ` · ${selected.spec.records.toLocaleString()} documents`
-              : ` · ${selected.spec.tables} tables × ${selected.spec.tableSize.toLocaleString()} rows`}
+              ? `, ${selected.spec.records.toLocaleString()} documents`
+              : `, ${selected.spec.tables} tables x ${selected.spec.tableSize.toLocaleString()} rows`}
           </Typography>
         )}
       </DialogContent>
