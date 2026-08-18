@@ -3,8 +3,8 @@ dist/
 !backend/dist/
 backend/dist/*
 !backend/dist/main.js
-backend/plugin-backend
-everest-perf
+/backend/plugin-backend
+/everest-perf
 *.db
 *.db-wal
 *.db-shm
