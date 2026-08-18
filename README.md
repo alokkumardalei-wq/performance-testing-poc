@@ -201,3 +201,8 @@ The reasoning behind the shape of this POC - single plugin with per-engine
 drivers, Jobs as the execution model, fingerprint-gated comparisons,
 ephemeral-default storage, and the security caveats of the current plugin
 proxy - is written up in [docs/architecture.md](docs/architecture.md).
+
+## License
+
+Apache-2.0, matching OpenEverest itself, so this code can be lifted into a real
+plugin repository without a licence conversation.
